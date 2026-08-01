@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes.auth import router as auth_router
 from api.routes.health import router as health_router
 from config.settings import get_settings
+from dashboard.admin import router as admin_dashboard_router
 from dashboard.router import router as dashboard_router
 from middleware.errors import install_exception_handlers
 from middleware.request_logging import RequestLoggingMiddleware
@@ -35,6 +36,7 @@ install_exception_handlers(app)
 app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(dashboard_router)
+app.include_router(admin_dashboard_router)
 
 
 @app.get("/")
