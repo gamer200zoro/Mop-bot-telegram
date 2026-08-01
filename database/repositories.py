@@ -13,7 +13,7 @@ from sqlalchemy import Select, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from database.models import LogEntry, Note, Reminder, Todo, User
+from database.models import LogEntry, Note, Reminder, Todo, Upload, User
 
 
 class UserRepository:
@@ -135,6 +135,45 @@ class ReminderRepository:
 
         statement = update(Reminder).where(Reminder.id == reminder_id).values(is_sent=True)
         await self.session.execute(statement)
+
+
+class UploadRepository:
+    """Data access helpers for stored uploads."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def list_for_user(self, user_id: int) -> Sequence[Upload]:
+        """Return uploads for a user, newest first."""
+
+        statement = select(Upload).where(Upload.user_id == user_id).order_by(Upload.created_at.desc())
+        result = await self.session.execute(statement)
+        return result.scalars().all()
+
+    async def create(
+        self,
+        user_id: int,
+        original_filename: str,
+        storage_path: str,
+        bucket: str,
+        content_type: str | None,
+        public_url: str | None,
+        file_size: int | None,
+    ) -> Upload:
+        """Persist uploaded file metadata."""
+
+        upload = Upload(
+            user_id=user_id,
+            original_filename=original_filename,
+            storage_path=storage_path,
+            bucket=bucket,
+            content_type=content_type,
+            public_url=public_url,
+            file_size=file_size,
+        )
+        self.session.add(upload)
+        await self.session.flush()
+        return upload
 
 
 class LogRepository:
