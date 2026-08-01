@@ -25,7 +25,11 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/reminders - list reminders\n"
         "/upload - upload a replied media file\n"
         "/uploads - list uploaded files\n"
-        "/download - download a stored file\n\n"
-        "More modules are being added in layers: admin, AI, PDF tools, weather, news, and dashboard features."
+        "/download - download a stored file\n"
+        "/weather - get current weather\n"
+        "/news - get headline news\n"
+        "/fx - convert currencies\n"
+        "/qr - generate a QR code\n\n"
+        "More modules are being added in layers: admin, AI, PDF tools, and dashboard features."
     )
     await update.message.reply_text(text)
