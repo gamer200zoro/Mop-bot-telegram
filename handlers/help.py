@@ -24,6 +24,7 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/remind - create a reminder\n"
         "/reminders - list reminders\n"
         "/upload - upload a replied media file\n"
+        "/uploads - list uploaded files\n"
         "/download - download a stored file\n\n"
         "More modules are being added in layers: admin, AI, PDF tools, weather, news, and dashboard features."
     )
