@@ -49,7 +49,10 @@ async def dashboard_home(request: Request) -> str:
               feature modules will slot into this surface.
             </p>
             <div class="badge">{auth_banner}</div>
-            <a href="/dashboard/login">Open login</a>
+            <div style="display:flex; gap:16px; flex-wrap:wrap;">
+              <a href="/dashboard/login">Open login</a>
+              <a href="/dashboard/admin">Open admin overview</a>
+            </div>
           </section>
           <section class="grid">
             <div class="card"><div class="muted">Status</div><h2>Healthy</h2></div>
