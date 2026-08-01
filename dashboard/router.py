@@ -6,17 +6,21 @@ with authentication, charts, and user management.
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
+
+from dashboard.auth import read_dashboard_subject
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
 @router.get("", response_class=HTMLResponse)
-async def dashboard_home() -> str:
+async def dashboard_home(request: Request) -> str:
     """Render a minimal operational dashboard."""
 
-    return """
+    subject = read_dashboard_subject(request)
+    auth_banner = f"Signed in as {subject}" if subject else "Not signed in"
+    return f"""
     <!doctype html>
     <html lang="en">
       <head>
@@ -24,13 +28,14 @@ async def dashboard_home() -> str:
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Jarvis Dashboard</title>
         <style>
-          :root { color-scheme: dark; }
-          body { margin: 0; font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
-          .wrap { max-width: 1100px; margin: 0 auto; padding: 32px; }
-          .hero { display: grid; gap: 12px; padding: 28px; background: #111827; border: 1px solid #334155; border-radius: 20px; }
-          .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }
-          .card { padding: 20px; border-radius: 18px; background: #1e293b; border: 1px solid #334155; }
-          .muted { color: #94a3b8; }
+          :root {{ color-scheme: dark; }}
+          body {{ margin: 0; font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }}
+          .wrap {{ max-width: 1100px; margin: 0 auto; padding: 32px; }}
+          .hero {{ display: grid; gap: 12px; padding: 28px; background: #111827; border: 1px solid #334155; border-radius: 20px; }}
+          .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 18px; }}
+          .card {{ padding: 20px; border-radius: 18px; background: #1e293b; border: 1px solid #334155; }}
+          .muted {{ color: #94a3b8; }}
+          .badge {{ display: inline-flex; width: fit-content; padding: 6px 12px; border-radius: 999px; background: #0f172a; border: 1px solid #334155; }}
         </style>
       </head>
       <body>
@@ -42,6 +47,7 @@ async def dashboard_home() -> str:
               The bot core is online. Authentication, metrics, user management, and
               feature modules will slot into this surface.
             </p>
+            <div class="badge">{auth_banner}</div>
           </section>
           <section class="grid">
             <div class="card"><div class="muted">Status</div><h2>Healthy</h2></div>
