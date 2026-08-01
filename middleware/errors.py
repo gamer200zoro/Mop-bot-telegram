@@ -19,6 +19,6 @@ def install_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
     @app.exception_handler(Exception)
-    async def unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:
-        logger.exception("Unhandled application error", exc_info=exc)
+    async def unhandled_exception_handler(_: Request, _: Exception) -> JSONResponse:
+        logger.exception("Unhandled application error")
         return JSONResponse(status_code=500, content={"detail": "Internal server error"})
