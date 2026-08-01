@@ -9,53 +9,48 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from database.session import AsyncSessionLocal
-from services.users import UserService
 from services.storage import StorageService
+from services.users import UserService
 from utils.files import build_storage_path, sanitize_filename
 
-_MEDIA_PRIORITY = ("document", "audio", "video", "voice", "video_note", "photo")
 
-
-def _extract_media_name(update: Update) -> tuple[bytes, str, str] | None:
-    """Extract the media bytes and a safe filename from a replied-to message."""
+def _extract_media_descriptor(update: Update) -> tuple[str, str, str] | None:
+    """Return the Telegram file ID, filename, and content type from a reply."""
 
     message = update.message
     if message is None or message.reply_to_message is None:
         return None
 
     source = message.reply_to_message
-    media_file_id: str | None = None
-    filename = "file.bin"
-    content_type = "application/octet-stream"
-
     if source.document is not None:
-        media_file_id = source.document.file_id
-        filename = source.document.file_name or filename
-        content_type = source.document.mime_type or content_type
-    elif source.audio is not None:
-        media_file_id = source.audio.file_id
-        filename = source.audio.file_name or "audio.mp3"
-        content_type = source.audio.mime_type or content_type
-    elif source.video is not None:
-        media_file_id = source.video.file_id
-        filename = source.video.file_name or "video.mp4"
-        content_type = source.video.mime_type or content_type
-    elif source.voice is not None:
-        media_file_id = source.voice.file_id
-        filename = "voice.ogg"
-        content_type = source.voice.mime_type or "audio/ogg"
-    elif source.video_note is not None:
-        media_file_id = source.video_note.file_id
-        filename = "video_note.mp4"
-        content_type = "video/mp4"
-    elif source.photo:
-        media_file_id = source.photo[-1].file_id
-        filename = "photo.jpg"
-        content_type = "image/jpeg"
-    else:
-        return None
-
-    return media_file_id.encode("utf-8"), sanitize_filename(filename), content_type
+        return (
+            source.document.file_id,
+            sanitize_filename(source.document.file_name or "document.bin"),
+            source.document.mime_type or "application/octet-stream",
+        )
+    if source.audio is not None:
+        return (
+            source.audio.file_id,
+            sanitize_filename(source.audio.file_name or "audio.mp3"),
+            source.audio.mime_type or "audio/mpeg",
+        )
+    if source.video is not None:
+        return (
+            source.video.file_id,
+            sanitize_filename(source.video.file_name or "video.mp4"),
+            source.video.mime_type or "video/mp4",
+        )
+    if source.voice is not None:
+        return (
+            source.voice.file_id,
+            "voice.ogg",
+            source.voice.mime_type or "audio/ogg",
+        )
+    if source.video_note is not None:
+        return (source.video_note.file_id, "video_note.mp4", "video/mp4")
+    if source.photo:
+        return (source.photo[-1].file_id, "photo.jpg", "image/jpeg")
+    return None
 
 
 async def upload_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -82,22 +77,21 @@ async def upload_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         await update.message.reply_text("Storage is not configured yet")
         return
 
-    media_info = _extract_media_name(update)
-    if media_info is None:
+    descriptor = _extract_media_descriptor(update)
+    if descriptor is None:
         await update.message.reply_text("No supported media found in the replied message")
         return
 
-    media_file_id_bytes, filename, content_type = media_info
-    media_file_id = media_file_id_bytes.decode("utf-8")
-    telegram_file = await context.bot.get_file(media_file_id)
+    telegram_file_id, filename, content_type = descriptor
+    telegram_file = await context.bot.get_file(telegram_file_id)
     payload = await telegram_file.download_as_bytearray()
     storage_path = build_storage_path(user_id=user_id, filename=filename)
     stored = storage.upload_bytes(storage_path, bytes(payload), content_type=content_type)
 
-    await update.message.reply_text(
-        f"Uploaded as `{stored.path}`" + (f"\nURL: {stored.public_url}" if stored.public_url else ""),
-        parse_mode="Markdown",
-    )
+    reply = f"Uploaded as `{stored.path}`"
+    if stored.public_url:
+        reply += f"\nURL: {stored.public_url}"
+    await update.message.reply_text(reply, parse_mode="Markdown")
 
 
 async def download_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
