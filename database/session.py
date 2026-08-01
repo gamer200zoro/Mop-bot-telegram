@@ -1,4 +1,4 @@
-"""Asynchronous PostgreSQL session management.
+"""Asynchronous database session management.
 
 Jarvis uses SQLAlchemy's async engine so the Telegram bot and FastAPI backend
 can share one database layer without blocking the event loop.
@@ -15,7 +15,7 @@ from config.settings import get_settings
 settings = get_settings()
 
 engine = create_async_engine(
-    str(settings.database_url),
+    settings.resolved_database_url(),
     echo=settings.debug,
     pool_pre_ping=True,
     pool_size=5,
