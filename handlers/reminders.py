@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from database.models import Reminder
 from database.session import AsyncSessionLocal
 from services.reminders import ReminderService
 from services.users import UserService
@@ -47,20 +48,14 @@ async def create_reminder_handler(update: Update, context: ContextTypes.DEFAULT_
             full_name=update.effective_user.full_name,
             username=update.effective_user.username,
         )
-        session.add(
-            __import__("database.models", fromlist=["Reminder"]).Reminder(
-                user_id=user_id,
-                title=title,
-                remind_at=remind_at,
-            )
-        )
+        session.add(Reminder(user_id=user_id, title=title, remind_at=remind_at))
         await session.commit()
 
     await update.message.reply_text(f"Reminder saved for {minutes} minute(s) from now.")
 
 
 async def list_reminders_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """List current user's due and upcoming reminders."""
+    """List current user's upcoming reminders."""
 
     _ = context
     if update.message is None or update.effective_user is None:
@@ -74,12 +69,11 @@ async def list_reminders_handler(update: Update, context: ContextTypes.DEFAULT_T
             username=update.effective_user.username,
         )
         reminder_service = ReminderService(session)
-        reminders = await reminder_service.due_reminders(datetime.now(tz=UTC))
-        user_reminders = [reminder for reminder in reminders if reminder.user_id == user_id]
+        reminders = await reminder_service.upcoming_reminders(user_id=user_id)
 
-    if not user_reminders:
-        await update.message.reply_text("No due reminders right now.")
+    if not reminders:
+        await update.message.reply_text("No reminders yet. Use /remind title | minutes_from_now")
         return
 
-    lines = [f"#{reminder.id} {reminder.title}" for reminder in user_reminders[:10]]
+    lines = [f"#{reminder.id} {reminder.title}" for reminder in reminders[:10]]
     await update.message.reply_text("Your reminders:\n" + "\n".join(lines))
