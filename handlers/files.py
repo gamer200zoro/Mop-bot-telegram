@@ -10,6 +10,7 @@ from telegram.ext import ContextTypes
 
 from database.session import AsyncSessionLocal
 from services.storage import StorageService
+from services.uploads import UploadService
 from services.users import UserService
 from utils.files import build_storage_path, sanitize_filename
 
@@ -87,6 +88,19 @@ async def upload_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     payload = await telegram_file.download_as_bytearray()
     storage_path = build_storage_path(user_id=user_id, filename=filename)
     stored = storage.upload_bytes(storage_path, bytes(payload), content_type=content_type)
+
+    async with AsyncSessionLocal() as session:
+        upload_service = UploadService(session)
+        await upload_service.record_upload(
+            user_id=user_id,
+            original_filename=filename,
+            storage_path=stored.path,
+            bucket=stored.bucket,
+            content_type=content_type,
+            public_url=stored.public_url,
+            file_size=len(payload),
+        )
+        await session.commit()
 
     reply = f"Uploaded as `{stored.path}`"
     if stored.public_url:
