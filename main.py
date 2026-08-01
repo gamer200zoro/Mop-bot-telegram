@@ -1,7 +1,7 @@
 """Jarvis application entrypoint.
 
 Running ``python main.py`` starts the FastAPI server in a background thread and
-runs the Telegram bot in the main process.
+starts the Telegram bot when credentials are available.
 """
 
 from __future__ import annotations
@@ -69,12 +69,16 @@ async def main() -> None:
     web_thread.start()
 
     telegram_application = build_telegram_application()
-    await _start_bot(telegram_application)
+    if telegram_application is not None:
+        await _start_bot(telegram_application)
+    else:
+        logger.warning("Telegram bot disabled until TELEGRAM_BOT_TOKEN is configured")
 
     try:
         await asyncio.Event().wait()
     finally:
-        await _stop_bot(telegram_application)
+        if telegram_application is not None:
+            await _stop_bot(telegram_application)
 
 
 if __name__ == "__main__":
