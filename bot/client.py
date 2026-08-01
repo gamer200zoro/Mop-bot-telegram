@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from telegram import BotCommand
 from telegram.ext import Application, ApplicationBuilder, CommandHandler
 
 from commands.registry import COMMANDS
 from config.settings import get_settings
+from database.session import AsyncSessionLocal
 from utils.logging import get_logger
 
 settings = get_settings()
@@ -27,17 +29,22 @@ def build_telegram_application() -> Application | None:
 
     builder = ApplicationBuilder().token(token)
     application = builder.build()
+    application.bot_data["session_factory"] = AsyncSessionLocal
 
     for command in COMMANDS:
         application.add_handler(CommandHandler(command.name, command.handler))
 
+    application.post_init = post_init
+    application.post_shutdown = post_shutdown
     return application
 
 
 async def post_init(application: Application) -> None:
-    """Hook for future startup tasks such as command registration."""
+    """Register the command menu after startup."""
 
-    _ = application
+    commands = [BotCommand(command.name, command.description) for command in COMMANDS]
+    await application.bot.set_my_commands(commands)
+    logger.info("Telegram command menu registered")
 
 
 async def post_shutdown(application: Application) -> None:
