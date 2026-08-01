@@ -7,7 +7,6 @@ logs, and upload tracking.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 
 from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -47,6 +46,7 @@ class User(Base, TimestampMixin):
     notes: Mapped[list["Note"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     todos: Mapped[list["Todo"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     reminders: Mapped[list["Reminder"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    uploads: Mapped[list["Upload"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 
 class Note(Base, TimestampMixin):
@@ -91,10 +91,27 @@ class Reminder(Base, TimestampMixin):
     user: Mapped[User] = relationship(back_populates="reminders")
 
 
+class Upload(Base, TimestampMixin):
+    """Metadata for files uploaded to Supabase Storage."""
+
+    __tablename__ = "uploads"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    storage_path: Mapped[str] = mapped_column(String(512), unique=True, nullable=False, index=True)
+    bucket: Mapped[str] = mapped_column(String(128), nullable=False)
+    content_type: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    public_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    file_size: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+
+    user: Mapped[User] = relationship(back_populates="uploads")
+
+
 class LogEntry(Base, TimestampMixin):
     """Persistent audit log for important system events."""
 
-    __tablename__ = "log_entries" 
+    __tablename__ = "log_entries"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     level: Mapped[str] = mapped_column(String(16), nullable=False)
