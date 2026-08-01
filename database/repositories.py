@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from datetime import UTC, datetime
 
-from sqlalchemy import Select, delete, select, update
+from sqlalchemy import Select, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -106,6 +106,17 @@ class ReminderRepository:
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    async def list_for_user(self, user_id: int) -> Sequence[Reminder]:
+        """Return future reminders for a user."""
+
+        statement = (
+            select(Reminder)
+            .where(Reminder.user_id == user_id)
+            .order_by(Reminder.is_sent.asc(), Reminder.remind_at.asc())
+        )
+        result = await self.session.execute(statement)
+        return result.scalars().all()
 
     async def due_reminders(self, now: datetime) -> Sequence[Reminder]:
         """Return reminders that should fire now or earlier."""
