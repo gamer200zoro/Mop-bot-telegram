@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-from typing import cast
-
 from telegram.ext import Application, ApplicationBuilder, CommandHandler
 
+from commands.registry import COMMANDS
 from config.settings import get_settings
-from handlers.start import start_handler
 from utils.logging import get_logger
 
 settings = get_settings()
@@ -29,8 +27,11 @@ def build_telegram_application() -> Application | None:
 
     builder = ApplicationBuilder().token(token)
     application = builder.build()
-    application.add_handler(CommandHandler("start", start_handler))
-    return cast(Application, application)
+
+    for command in COMMANDS:
+        application.add_handler(CommandHandler(command.name, command.handler))
+
+    return application
 
 
 async def post_init(application: Application) -> None:
