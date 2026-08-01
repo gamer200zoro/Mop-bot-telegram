@@ -5,6 +5,8 @@ from __future__ import annotations
 from telegram import ChatPermissions, Update
 from telegram.ext import ContextTypes
 
+from services.permissions import PermissionService
+
 
 async def _parse_target_id(context: ContextTypes.DEFAULT_TYPE) -> int | None:
     """Parse the first positional argument as a Telegram user ID."""
@@ -23,10 +25,19 @@ async def _ensure_group_chat(update: Update) -> bool:
     return update.effective_chat is not None and update.effective_message is not None
 
 
+async def _ensure_admin(update: Update) -> bool:
+    """Return True when the command issuer is configured as an admin."""
+
+    user = update.effective_user
+    if user is None:
+        return False
+    return PermissionService(user.id).is_admin()
+
+
 async def ban_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Ban a member from the current chat."""
 
-    if not await _ensure_group_chat(update):
+    if not await _ensure_group_chat(update) or not await _ensure_admin(update):
         return
     target_id = await _parse_target_id(context)
     if target_id is None:
@@ -40,7 +51,7 @@ async def ban_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 async def kick_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Kick a member from the current chat."""
 
-    if not await _ensure_group_chat(update):
+    if not await _ensure_group_chat(update) or not await _ensure_admin(update):
         return
     target_id = await _parse_target_id(context)
     if target_id is None:
@@ -55,7 +66,7 @@ async def kick_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def mute_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Restrict a member from sending messages."""
 
-    if not await _ensure_group_chat(update):
+    if not await _ensure_group_chat(update) or not await _ensure_admin(update):
         return
     target_id = await _parse_target_id(context)
     if target_id is None:
@@ -70,7 +81,7 @@ async def mute_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 async def warn_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Issue a warning to a member."""
 
-    if not await _ensure_group_chat(update):
+    if not await _ensure_group_chat(update) or not await _ensure_admin(update):
         return
     target_id = await _parse_target_id(context)
     if target_id is None:
