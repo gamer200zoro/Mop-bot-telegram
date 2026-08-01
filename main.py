@@ -11,11 +11,13 @@ import threading
 from contextlib import suppress
 
 import uvicorn
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from telegram.ext import Application
 
 from api.app import app as fastapi_app
 from bot.client import build_telegram_application
 from config.settings import get_settings
+from scheduler.service import build_scheduler
 from utils.logging import configure_logging, get_logger
 
 settings = get_settings()
@@ -59,6 +61,22 @@ async def _stop_bot(application: Application) -> None:
         await application.shutdown()
 
 
+async def _start_scheduler(application: Application) -> AsyncIOScheduler:
+    """Start the background scheduler."""
+
+    scheduler = build_scheduler(application)
+    scheduler.start()
+    logger.info("Scheduler started")
+    return scheduler
+
+
+async def _stop_scheduler(scheduler: AsyncIOScheduler) -> None:
+    """Stop the background scheduler."""
+
+    with suppress(Exception):
+        scheduler.shutdown(wait=False)
+
+
 async def main() -> None:
     """Boot the complete application stack."""
 
@@ -69,14 +87,19 @@ async def main() -> None:
     web_thread.start()
 
     telegram_application = build_telegram_application()
+    scheduler: AsyncIOScheduler | None = None
+
     if telegram_application is not None:
         await _start_bot(telegram_application)
+        scheduler = await _start_scheduler(telegram_application)
     else:
         logger.warning("Telegram bot disabled until TELEGRAM_BOT_TOKEN is configured")
 
     try:
         await asyncio.Event().wait()
     finally:
+        if scheduler is not None:
+            await _stop_scheduler(scheduler)
         if telegram_application is not None:
             await _stop_bot(telegram_application)
 
