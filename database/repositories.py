@@ -11,6 +11,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy import Select, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from database.models import LogEntry, Note, Reminder, Todo, User
 
@@ -109,7 +110,12 @@ class ReminderRepository:
     async def due_reminders(self, now: datetime) -> Sequence[Reminder]:
         """Return reminders that should fire now or earlier."""
 
-        statement = select(Reminder).where(Reminder.is_sent.is_(False), Reminder.remind_at <= now).order_by(Reminder.remind_at.asc())
+        statement = (
+            select(Reminder)
+            .options(selectinload(Reminder.user))
+            .where(Reminder.is_sent.is_(False), Reminder.remind_at <= now)
+            .order_by(Reminder.remind_at.asc())
+        )
         result = await self.session.execute(statement)
         return result.scalars().all()
 
