@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 from logging.config import fileConfig
-from pathlib import Path
-from typing import Any
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from config.settings import get_settings
 from database.base import Base
-from database.models import LogEntry, Note, Reminder, Todo, User  # noqa: F401
+from database.models import LogEntry, Note, Reminder, Todo, Upload, User  # noqa: F401
 
 config = context.config
 settings = get_settings()
