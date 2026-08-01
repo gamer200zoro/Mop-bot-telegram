@@ -9,9 +9,12 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.routes.auth import router as auth_router
 from api.routes.health import router as health_router
 from config.settings import get_settings
 from dashboard.router import router as dashboard_router
+from middleware.errors import install_exception_handlers
+from middleware.request_logging import RequestLoggingMiddleware
 from middleware.security import RateLimitMiddleware
 
 settings = get_settings()
@@ -25,8 +28,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RateLimitMiddleware, requests_per_minute=settings.rate_limit_per_minute)
 
+install_exception_handlers(app)
+app.include_router(auth_router)
 app.include_router(health_router)
 app.include_router(dashboard_router)
 
