@@ -7,9 +7,10 @@ bot, API server, scheduler, database, and dashboard layers.
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, PostgresDsn, SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,7 +32,7 @@ class Settings(BaseSettings):
     telegram_webhook_secret: SecretStr = Field(default=SecretStr(""))
     telegram_admin_ids: str = Field(default="")
 
-    database_url: PostgresDsn | str = Field(default="")
+    database_url: str = Field(default="")
     supabase_url: str = Field(default="")
     supabase_anon_key: SecretStr = Field(default=SecretStr(""))
     supabase_service_role_key: SecretStr = Field(default=SecretStr(""))
@@ -51,6 +52,13 @@ class Settings(BaseSettings):
 
     rate_limit_per_minute: int = Field(default=60)
     upload_max_mb: int = Field(default=25)
+
+    def resolved_database_url(self) -> str:
+        """Return the configured database URL or a local SQLite fallback."""
+
+        if self.database_url.strip():
+            return self.database_url.strip()
+        return f"sqlite+aiosqlite:///{Path('jarvis.db').resolve()}"
 
     @property
     def admin_ids(self) -> list[int]:
