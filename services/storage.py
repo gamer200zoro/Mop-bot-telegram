@@ -48,13 +48,13 @@ class StorageService:
         file_options = {"upsert": "true" if upsert else "false"}
         if content_type:
             file_options["content-type"] = content_type
-        response = bucket.upload(path=path, file=BytesIO(payload), file_options=file_options)
+        bucket.upload(path=path, file=BytesIO(payload), file_options=file_options)
         public_url: str | None = None
         try:
             public_url = bucket.get_public_url(path)
         except Exception:  # noqa: BLE001
             public_url = None
-        return StoredObject(path=str(response), bucket=settings.supabase_storage_bucket, public_url=public_url)
+        return StoredObject(path=path, bucket=settings.supabase_storage_bucket, public_url=public_url)
 
     def download_bytes(self, path: str) -> bytes:
         """Download binary data from Supabase Storage."""
