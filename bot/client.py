@@ -27,15 +27,18 @@ def build_telegram_application() -> Application | None:
         logger.warning("Telegram bot token is missing, skipping bot startup")
         return None
 
-    builder = ApplicationBuilder().token(token)
+    builder = (
+        ApplicationBuilder()
+        .token(token)
+        .post_init(post_init)
+        .post_shutdown(post_shutdown)
+    )
     application = builder.build()
     application.bot_data["session_factory"] = AsyncSessionLocal
 
     for command in COMMANDS:
         application.add_handler(CommandHandler(command.name, command.handler))
 
-    application.post_init = post_init
-    application.post_shutdown = post_shutdown
     return application
 
 
