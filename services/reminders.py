@@ -7,6 +7,7 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.models import Reminder
 from database.repositories import ReminderRepository
 
 
@@ -16,7 +17,12 @@ class ReminderService:
     def __init__(self, session: AsyncSession) -> None:
         self.repository = ReminderRepository(session)
 
-    async def due_reminders(self, now: datetime) -> Sequence[object]:
+    async def upcoming_reminders(self, user_id: int) -> Sequence[Reminder]:
+        """Return all reminders for a user."""
+
+        return await self.repository.list_for_user(user_id)
+
+    async def due_reminders(self, now: datetime) -> Sequence[Reminder]:
         """Return reminders that should be sent now."""
 
         return await self.repository.due_reminders(now)
