@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from handlers.admin import ban_user_handler, kick_user_handler, mute_user_handler, warn_user_handler
+from handlers.files import download_file_handler, upload_file_handler
 from handlers.help import help_handler
 from handlers.notes import create_note_handler, list_notes_handler
 from handlers.reminders import create_reminder_handler, list_reminders_handler
@@ -31,6 +32,8 @@ COMMANDS: tuple[CommandSpec, ...] = (
     CommandSpec(name="todos", description="List todos", handler=list_todos_handler),
     CommandSpec(name="remind", description="Create a reminder", handler=create_reminder_handler),
     CommandSpec(name="reminders", description="List reminders", handler=list_reminders_handler),
+    CommandSpec(name="upload", description="Upload a replied media file", handler=upload_file_handler),
+    CommandSpec(name="download", description="Download a stored file", handler=download_file_handler),
     CommandSpec(name="ban", description="Ban a user", handler=ban_user_handler),
     CommandSpec(name="kick", description="Kick a user", handler=kick_user_handler),
     CommandSpec(name="mute", description="Mute a user", handler=mute_user_handler),
