@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes.health import router as health_router
 from config.settings import get_settings
+from dashboard.router import router as dashboard_router
 from middleware.security import RateLimitMiddleware
 
 settings = get_settings()
@@ -27,6 +28,7 @@ app.add_middleware(
 app.add_middleware(RateLimitMiddleware, requests_per_minute=settings.rate_limit_per_minute)
 
 app.include_router(health_router)
+app.include_router(dashboard_router)
 
 
 @app.get("/")
