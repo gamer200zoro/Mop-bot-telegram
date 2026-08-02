@@ -10,6 +10,7 @@ Jarvis is a modular Telegram super bot built with Python 3.13+, python-telegram-
 - Initial Alembic migration history
 - Docker and Replit launch configuration
 - Typed settings and structured logging
+- Notes, todos, reminders, uploads, utilities, and AI command surfaces
 
 ## Run locally
 
@@ -35,6 +36,8 @@ Required for full functionality:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `JWT_SECRET_KEY`
 - `DASHBOARD_SECRET_KEY`
+- `OPENAI_API_KEY` for the AI command layer
+- `OPENAI_BASE_URL` and `OPENAI_MODEL` if you are using a compatible provider
 
 ## Deployment targets
 
@@ -50,4 +53,4 @@ Required for full functionality:
 
 ## Next layers
 
-The next commits will expand moderation, notes, todos, reminders, dashboard auth, storage, AI services, file tools, and CI/CD.
+The next commits will expand PDF tools, image conversion, anti-spam moderation, and deeper dashboard workflows.
