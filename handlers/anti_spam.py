@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+
 from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import ApplicationHandlerStop, ContextTypes
