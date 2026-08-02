@@ -29,7 +29,14 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/weather - get current weather\n"
         "/news - get headline news\n"
         "/fx - convert currencies\n"
-        "/qr - generate a QR code\n\n"
-        "More modules are being added in layers: admin, AI, PDF tools, and dashboard features."
+        "/qr - generate a QR code\n"
+        "/ask - chat with Jarvis\n"
+        "/summarize - summarize text\n"
+        "/grammar - correct grammar\n"
+        "/translate - translate text\n"
+        "/explain - explain code\n"
+        "/ocr - extract text from an image\n"
+        "/caption - caption an image\n\n"
+        "More modules are being added in layers: admin, PDF tools, and dashboard features."
     )
     await update.message.reply_text(text)
