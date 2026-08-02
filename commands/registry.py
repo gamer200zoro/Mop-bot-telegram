@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from handlers.ai import ask_handler, caption_handler, explain_handler, grammar_handler, ocr_handler, summarize_handler, translate_handler
 from handlers.admin import ban_user_handler, kick_user_handler, mute_user_handler, warn_user_handler
 from handlers.currency import currency_handler
 from handlers.files import download_file_handler, upload_file_handler
@@ -44,6 +45,13 @@ COMMANDS: tuple[CommandSpec, ...] = (
     CommandSpec(name="news", description="Get headline news", handler=news_handler),
     CommandSpec(name="fx", description="Convert currencies", handler=currency_handler),
     CommandSpec(name="qr", description="Generate a QR code", handler=qr_handler),
+    CommandSpec(name="ask", description="Ask Jarvis a question", handler=ask_handler),
+    CommandSpec(name="summarize", description="Summarize text", handler=summarize_handler),
+    CommandSpec(name="grammar", description="Correct grammar", handler=grammar_handler),
+    CommandSpec(name="translate", description="Translate text", handler=translate_handler),
+    CommandSpec(name="explain", description="Explain code", handler=explain_handler),
+    CommandSpec(name="ocr", description="Extract text from an image", handler=ocr_handler),
+    CommandSpec(name="caption", description="Caption an image", handler=caption_handler),
     CommandSpec(name="ban", description="Ban a user", handler=ban_user_handler),
     CommandSpec(name="kick", description="Kick a user", handler=kick_user_handler),
     CommandSpec(name="mute", description="Mute a user", handler=mute_user_handler),
