@@ -10,8 +10,10 @@ from handlers.admin import ban_user_handler, kick_user_handler, mute_user_handle
 from handlers.currency import currency_handler
 from handlers.files import download_file_handler, upload_file_handler
 from handlers.help import help_handler
+from handlers.images import image_compress_handler, image_convert_handler, image_info_handler
 from handlers.news import news_handler
 from handlers.notes import create_note_handler, list_notes_handler
+from handlers.pdf import merge_pdfs_handler, split_pdf_handler
 from handlers.qr import qr_handler
 from handlers.reminders import create_reminder_handler, list_reminders_handler
 from handlers.start import start_handler
@@ -52,6 +54,11 @@ COMMANDS: tuple[CommandSpec, ...] = (
     CommandSpec(name="explain", description="Explain code", handler=explain_handler),
     CommandSpec(name="ocr", description="Extract text from an image", handler=ocr_handler),
     CommandSpec(name="caption", description="Caption an image", handler=caption_handler),
+    CommandSpec(name="pdfmerge", description="Merge PDFs", handler=merge_pdfs_handler),
+    CommandSpec(name="pdfsplit", description="Split a PDF", handler=split_pdf_handler),
+    CommandSpec(name="imginfo", description="Inspect an image", handler=image_info_handler),
+    CommandSpec(name="imgconvert", description="Convert an image", handler=image_convert_handler),
+    CommandSpec(name="imgcompress", description="Compress an image", handler=image_compress_handler),
     CommandSpec(name="ban", description="Ban a user", handler=ban_user_handler),
     CommandSpec(name="kick", description="Kick a user", handler=kick_user_handler),
     CommandSpec(name="mute", description="Mute a user", handler=mute_user_handler),
