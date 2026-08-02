@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from telegram import BotCommand
-from telegram.ext import Application, ApplicationBuilder, CommandHandler
+from telegram.ext import Application, ApplicationBuilder, CommandHandler, MessageHandler, filters
 
 from commands.registry import COMMANDS
 from config.settings import get_settings
 from database.session import AsyncSessionLocal
+from handlers.anti_spam import anti_spam_guard
 from utils.logging import get_logger
 
 settings = get_settings()
@@ -36,8 +37,9 @@ def build_telegram_application() -> Application | None:
     application = builder.build()
     application.bot_data["session_factory"] = AsyncSessionLocal
 
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, anti_spam_guard), group=0)
     for command in COMMANDS:
-        application.add_handler(CommandHandler(command.name, command.handler))
+        application.add_handler(CommandHandler(command.name, command.handler), group=1)
 
     return application
 
