@@ -25,6 +25,20 @@ Core commands currently include:
 - `/pdfmerge`, `/pdfsplit`, `/imginfo`, `/imgconvert`, `/imgcompress`
 - `/ban`, `/kick`, `/mute`, `/warn`
 
+## Where to run it
+
+Jarvis can run in any of these places:
+
+- Local machine for development and debugging
+- Replit for a browser-based workspace
+- Docker for a repeatable container deployment
+- Linux VPS for a long-running always-on setup
+
+For the full how-to, see:
+
+- [Usage manual](docs/USAGE.md)
+- [Deployment guide](docs/DEPLOYMENT.md)
+
 ## Run locally
 
 1. Copy `.env.example` to `.env`
@@ -52,14 +66,6 @@ Required for full functionality:
 - `DASHBOARD_SECRET_KEY`
 - `OPENAI_API_KEY` for AI features that call a provider
 - `OPENAI_BASE_URL` and `OPENAI_MODEL` if you use a compatible provider
-
-## Deployment
-
-Jarvis is prepared for:
-
-- Replit
-- Docker
-- Linux VPS
 
 ## Health checks
 
