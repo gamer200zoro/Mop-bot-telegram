@@ -10,10 +10,10 @@ from __future__ import annotations
 import asyncio
 import calendar as calendar_module
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from time import monotonic
-from collections.abc import Callable
 
 from telegram import Bot
 
