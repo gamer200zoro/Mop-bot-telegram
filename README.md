@@ -10,7 +10,7 @@ Jarvis is a modular Telegram super bot built with Python 3.13+, python-telegram-
 - Initial Alembic migration history
 - Docker and Replit launch configuration
 - Typed settings and structured logging
-- Notes, todos, reminders, uploads, utilities, and AI command surfaces
+- Notes, todos, reminders, uploads, utilities, AI, PDF, and image command surfaces
 
 ## Run locally
 
@@ -53,4 +53,4 @@ Required for full functionality:
 
 ## Next layers
 
-The next commits will expand PDF tools, image conversion, anti-spam moderation, and deeper dashboard workflows.
+The next commits will expand anti-spam moderation, deeper dashboard workflows, and additional automation features.
