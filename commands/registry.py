@@ -17,6 +17,7 @@ from handlers.pdf import merge_pdfs_handler, split_pdf_handler
 from handlers.qr import qr_handler
 from handlers.reminders import create_reminder_handler, list_reminders_handler
 from handlers.start import start_handler
+from handlers.timing import calendar_handler, stopwatch_handler, timer_handler
 from handlers.todos import create_todo_handler, list_todos_handler
 from handlers.uploads import list_uploads_handler
 from handlers.weather import weather_handler
@@ -40,6 +41,9 @@ COMMANDS: tuple[CommandSpec, ...] = (
     CommandSpec(name="todos", description="List todos", handler=list_todos_handler),
     CommandSpec(name="remind", description="Create a reminder", handler=create_reminder_handler),
     CommandSpec(name="reminders", description="List reminders", handler=list_reminders_handler),
+    CommandSpec(name="timer", description="Set a timer", handler=timer_handler),
+    CommandSpec(name="stopwatch", description="Use the stopwatch", handler=stopwatch_handler),
+    CommandSpec(name="calendar", description="Show a calendar", handler=calendar_handler),
     CommandSpec(name="upload", description="Upload a replied media file", handler=upload_file_handler),
     CommandSpec(name="uploads", description="List uploaded files", handler=list_uploads_handler),
     CommandSpec(name="download", description="Download a stored file", handler=download_file_handler),
