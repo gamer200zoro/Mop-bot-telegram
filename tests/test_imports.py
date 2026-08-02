@@ -27,6 +27,7 @@ def test_core_modules_import_cleanly() -> None:
     import handlers.pdf  # noqa: F401
     import handlers.reminders  # noqa: F401
     import handlers.start  # noqa: F401
+    import handlers.timing  # noqa: F401
     import handlers.todos  # noqa: F401
     import handlers.uploads  # noqa: F401
     import main  # noqa: F401
@@ -45,6 +46,7 @@ def test_core_modules_import_cleanly() -> None:
     import services.qr  # noqa: F401
     import services.reminders  # noqa: F401
     import services.storage  # noqa: F401
+    import services.timing  # noqa: F401
     import services.todos  # noqa: F401
     import services.uploads  # noqa: F401
     import services.users  # noqa: F401
