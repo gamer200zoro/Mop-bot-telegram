@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime
 import calendar as calendar_module
+from datetime import datetime
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -19,10 +19,26 @@ def _get_stopwatch_service(context: ContextTypes.DEFAULT_TYPE) -> StopwatchServi
     return service
 
 
+def _parse_month(value: str) -> int:
+    """Parse either a month number or a month name into a month index."""
+
+    normalized = value.strip().lower()
+    if normalized.isdigit():
+        month = int(normalized)
+        if 1 <= month <= 12:
+            return month
+        raise ValueError("Month must be between 1 and 12")
+
+    for month_index in range(1, 13):
+        if normalized in {calendar_module.month_name[month_index].lower(), calendar_module.month_abbr[month_index].lower()}:
+            return month_index
+    raise ValueError("Month must be a number or month name")
+
+
 async def timer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Start a one-shot timer that notifies the user later."""
 
-    if update.message is None or update.effective_user is None:
+    if update.message is None or update.effective_user is None or update.effective_chat is None:
         return
 
     if not context.args:
@@ -92,7 +108,7 @@ async def calendar_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
     if context.args:
         try:
-            month = int(context.args[0])
+            month = _parse_month(context.args[0])
             if len(context.args) > 1:
                 year = int(context.args[1])
         except ValueError:
