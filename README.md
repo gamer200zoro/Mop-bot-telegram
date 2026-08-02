@@ -1,110 +1,74 @@
 # Jarvis Telegram Super Bot
 
-Jarvis is a powerful and modular Telegram bot built with Python, `python-telegram-bot`, and FastAPI, using Supabase for its database and storage needs.
+Jarvis is a modular Telegram bot built with Python 3.13+, `python-telegram-bot` v22+, FastAPI, SQLAlchemy async, and Supabase.
 
-## Features
+## What is working now
 
-This bot is designed to be a comprehensive solution for various Telegram interactions, administration tasks, utilities, AI-powered features, file management, and a web-based dashboard.
+- Telegram commands for notes, todos, reminders, uploads, utilities, AI, PDFs, images, and timing tools
+- FastAPI endpoints for `/`, `/health`, `/ping`, and `/metrics`
+- Dashboard home, login, and admin overview pages
+- Async SQLAlchemy database layer with Alembic migrations
+- Supabase Storage integration for uploads
+- Request logging, rate limiting, and exception handling
+- CI smoke tests for imports, commands, dashboard, and core services
 
-## What is in place
+## Commands
 
-- Telegram bot entrypoint with `/start`
-- FastAPI app with `/health`, `/ping`, and `/metrics`
-- Async SQLAlchemy database layer
-- Initial Alembic migration history
-- Docker and Replit launch configuration
-- Typed settings and structured logging
-- Notes, todos, reminders, uploads, utilities, AI, PDF, and image command surfaces
+Core commands currently include:
 
-## Project Structure
+- `/start`, `/help`
+- `/note`, `/notes`, `/todo`, `/todos`, `/remind`, `/reminders`
+- `/timer`, `/stopwatch`, `/calendar`
+- `/upload`, `/uploads`, `/download`
+- `/weather`, `/news`, `/fx`, `/qr`
+- `/ask`, `/summarize`, `/grammar`, `/translate`, `/explain`, `/ocr`, `/caption`
+- `/pdfmerge`, `/pdfsplit`, `/imginfo`, `/imgconvert`, `/imgcompress`
+- `/ban`, `/kick`, `/mute`, `/warn`
 
-```
-Jarvis/
-├── bot/                  # Core bot logic and initialization
-├── handlers/             # Telegram message handlers
-├── commands/             # Telegram command definitions
-├── middleware/           # Custom Telegram middleware
-├── dashboard/            # FastAPI web dashboard
-├── database/             # Database models, migrations, and session management
-├── storage/              # Supabase Storage integration
-├── scheduler/            # Task scheduling
-├── ai/                   # AI-powered features (chat, OCR, etc.)
-├── services/             # External service integrations
-├── api/                  # FastAPI backend API endpoints
-├── auth/                 # Authentication and authorization logic
-├── utils/                # Utility functions
-├── logs/                 # Logging configuration and output
-├── backups/              # Database and storage backup routines
-├── config/               # Configuration management
-├── static/               # Static files for the dashboard
-├── templates/            # Jinja2 templates for the dashboard
-├── tests/                # Unit and integration tests
-├── docker/               # Docker-related files
-├── docs/                 # Project documentation
-├── requirements.txt      # Python dependencies
-├── Dockerfile            # Docker build instructions
-├── Procfile              # Process file for Heroku/render.com deployment
-├── .env.example          # Example environment variables
-├── README.md             # Project README
-└── main.py               # Main application entry point
+## Run locally
+
+1. Copy `.env.example` to `.env`
+2. Fill in the required values
+3. Install dependencies
+4. Start the app
+
+```bash
+python main.py
 ```
 
-## Installation
+The web app starts even when `TELEGRAM_BOT_TOKEN` is missing. In that case, only the FastAPI side runs until the bot token is configured.
 
-### Prerequisites
+## Environment variables
 
-- Python 3.13+
-- Docker (optional, for containerized deployment)
-- Supabase project (with PostgreSQL database and Storage)
-- Telegram Bot Token (obtained from BotFather)
+Required for full functionality:
 
-### Steps
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/gamer200zoro/Mop-bot-telegram.git
-    cd Mop-bot-telegram
-    ```
-
-2.  **Set up environment variables:**
-
-    Copy the example environment file and fill in your details:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-    Edit the `.env` file with your actual values:
-
-    ```
-    TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
-    SUPABASE_URL=YOUR_SUPABASE_URL
-    SUPABASE_KEY=YOUR_SUPABASE_ANON_KEY
-    ```
-
-3.  **Install dependencies:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4.  **Run the bot:**
-
-    ```bash
-    python main.py
-    ```
-
-    The bot should now be running and accessible via Telegram. The FastAPI dashboard will be available at `http://localhost:8000` (or the port specified by your hosting environment).
+- `TELEGRAM_BOT_TOKEN`
+- `DATABASE_URL`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_STORAGE_BUCKET`
+- `JWT_SECRET_KEY`
+- `DASHBOARD_SECRET_KEY`
+- `OPENAI_API_KEY` for AI features that call a provider
+- `OPENAI_BASE_URL` and `OPENAI_MODEL` if you use a compatible provider
 
 ## Deployment
 
-Instructions for deploying to Replit, Docker, and Linux VPS will be provided in the `docs/` directory.
+Jarvis is prepared for:
 
-## Contributing
+- Replit
+- Docker
+- Linux VPS
 
-Contributions are welcome! Please follow the project's coding standards and guidelines.
+## Health checks
 
-## License
+- `GET /health`
+- `GET /ping`
+- `GET /metrics`
 
-This project is licensed under the MIT License.
+## Notes
+
+- The bot can run in polling mode for local development.
+- The dashboard is intentionally lightweight now and can be expanded safely.
+- Utilities that rely on external APIs will fail gracefully when their keys are missing.
