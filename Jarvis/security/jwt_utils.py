@@ -1,28 +1,42 @@
-from datetime import datetime, timedelta
+"""Legacy JWT compatibility wrapper.
+
+This module now delegates to the single active JWT implementation in
+``auth/jwt.py`` so the repository has only one token logic path.
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
 from typing import Optional
 
-from jose import jwt, JWTError
+from auth.jwt import create_access_token, decode_access_token
 
-SECRET_KEY = "your-secret-key"  # TODO: Load from environment variables
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+def create_access_token_legacy(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Compatibility wrapper for older imports that expected a dict payload.
+
+    The active token logic lives in ``auth/jwt.py``. This wrapper accepts the old
+    ``data`` shape but forwards to the central implementation and keeps time
+    handling timezone-aware.
+    """
+
+    payload = dict(data)
+    if "sub" not in payload:
+        raise ValueError("sub claim is required")
+    expires_minutes: int | None = None
+    if expires_delta is not None:
+        expires_minutes = max(1, int(expires_delta.total_seconds() // 60))
+    return create_access_token(subject=str(payload["sub"]), expires_minutes=expires_minutes)
+
 
 def verify_token(token: str, credentials_exception):
+    """Compatibility wrapper that validates a JWT and returns the subject."""
+
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        payload = decode_access_token(token)
+        username: str | None = payload.get("sub")
         if username is None:
             raise credentials_exception
         return username
-    except JWTError:
+    except Exception:  # noqa: BLE001
         raise credentials_exception
