@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import re
 from dataclasses import dataclass
+from io import BytesIO
 from typing import Any
 
 import httpx
