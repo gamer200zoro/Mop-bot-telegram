@@ -42,8 +42,8 @@ class Settings(BaseSettings):
     openai_base_url: str = Field(default="https://api.openai.com/v1")
     openai_model: str = Field(default="gpt-4o-mini")
 
-    dashboard_secret_key: SecretStr = Field(default=SecretStr("change-me"))
-    jwt_secret_key: SecretStr = Field(default=SecretStr("change-me-too"))
+    dashboard_secret_key: SecretStr = Field(default=SecretStr(""))
+    jwt_secret_key: SecretStr = Field(default=SecretStr(""))
     jwt_algorithm: str = Field(default="HS256")
     access_token_minutes: int = Field(default=60)
 
