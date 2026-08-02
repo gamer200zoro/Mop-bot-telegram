@@ -36,4 +36,4 @@ async def anti_spam_guard(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await message.delete()
     with contextlib.suppress(Exception):
         await context.bot.send_message(chat_id=message.chat_id, text=f"Please slow down. {decision.reason}")
-    raise ApplicationHandlerStop
+    raise ApplicationHandlerStop()
