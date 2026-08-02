@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from io import BytesIO
-
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -94,19 +92,19 @@ async def explain_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await update.message.reply_text(result.content)
 
 
-def _extract_replied_image(update: Update) -> tuple[bytes, str] | None:
-    """Extract image bytes from the replied-to message."""
+def _extract_replied_image(update: Update) -> tuple[str, str] | None:
+    """Extract a file identifier and filename from the replied-to message."""
 
     if update.message is None or update.message.reply_to_message is None:
         return None
 
     source = update.message.reply_to_message
     if source.document is not None:
-        return source.document.file_id.encode("utf-8"), source.document.file_name or "image.png"
+        return source.document.file_id, source.document.file_name or "image.png"
     if source.photo:
-        return source.photo[-1].file_id.encode("utf-8"), "photo.jpg"
+        return source.photo[-1].file_id, "photo.jpg"
     if source.video is not None:
-        return source.video.file_id.encode("utf-8"), source.video.file_name or "video.mp4"
+        return source.video.file_id, source.video.file_name or "video.mp4"
     return None
 
 
@@ -122,8 +120,8 @@ async def ocr_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text("Reply to an image or document and use /ocr")
         return
 
-    file_id_bytes, filename = descriptor
-    telegram_file = await update.get_bot().get_file(file_id_bytes.decode("utf-8"))
+    file_id, filename = descriptor
+    telegram_file = await context.bot.get_file(file_id)
     payload = await telegram_file.download_as_bytearray()
     result = await AIService().ocr_image(bytes(payload), filename)
     await update.message.reply_text(result.content)
@@ -141,8 +139,8 @@ async def caption_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text("Reply to an image or document and use /caption")
         return
 
-    file_id_bytes, filename = descriptor
-    telegram_file = await update.get_bot().get_file(file_id_bytes.decode("utf-8"))
+    file_id, filename = descriptor
+    telegram_file = await context.bot.get_file(file_id)
     payload = await telegram_file.download_as_bytearray()
     result = await AIService().caption_image(bytes(payload), filename)
     await update.message.reply_text(result.content)
