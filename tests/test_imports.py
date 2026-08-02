@@ -19,6 +19,7 @@ def test_core_modules_import_cleanly() -> None:
     import database.session  # noqa: F401
     import handlers.admin  # noqa: F401
     import handlers.ai  # noqa: F401
+    import handlers.anti_spam  # noqa: F401
     import handlers.files  # noqa: F401
     import handlers.help  # noqa: F401
     import handlers.images  # noqa: F401
@@ -33,6 +34,7 @@ def test_core_modules_import_cleanly() -> None:
     import middleware.request_logging  # noqa: F401
     import middleware.security  # noqa: F401
     import scheduler.service  # noqa: F401
+    import services.anti_spam  # noqa: F401
     import services.currency  # noqa: F401
     import services.images  # noqa: F401
     import services.logs  # noqa: F401
