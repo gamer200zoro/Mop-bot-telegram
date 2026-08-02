@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     supabase_service_role_key: SecretStr = Field(default=SecretStr(""))
     supabase_storage_bucket: str = Field(default="jarvis-files")
 
+    openai_api_key: SecretStr = Field(default=SecretStr(""))
+    openai_base_url: str = Field(default="https://api.openai.com/v1")
+    openai_model: str = Field(default="gpt-4o-mini")
+
     dashboard_secret_key: SecretStr = Field(default=SecretStr("change-me"))
     jwt_secret_key: SecretStr = Field(default=SecretStr("change-me-too"))
     jwt_algorithm: str = Field(default="HS256")
