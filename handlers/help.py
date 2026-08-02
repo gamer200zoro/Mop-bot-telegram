@@ -36,7 +36,12 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/translate - translate text\n"
         "/explain - explain code\n"
         "/ocr - extract text from an image\n"
-        "/caption - caption an image\n\n"
-        "More modules are being added in layers: admin, PDF tools, and dashboard features."
+        "/caption - caption an image\n"
+        "/pdfmerge - merge PDFs\n"
+        "/pdfsplit - split a PDF\n"
+        "/imginfo - inspect an image\n"
+        "/imgconvert - convert an image\n"
+        "/imgcompress - compress an image\n\n"
+        "More modules are being added in layers: admin and deeper dashboard features."
     )
     await update.message.reply_text(text)
