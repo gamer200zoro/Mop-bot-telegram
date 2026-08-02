@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import logging
+import contextlib
 
 from telegram import BotCommand, Update
 from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
