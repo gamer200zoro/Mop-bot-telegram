@@ -30,10 +30,16 @@ async def login(request: Request, response: Response) -> TokenResponse:
         payload = LoginRequest(username=str(form.get("username", "")).strip(), password=str(form.get("password", "")).strip())
 
     expected_password = settings.dashboard_secret_key.get_secret_value().strip()
-    if not expected_password or payload.password != expected_password:
+    if not expected_password:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Dashboard secret is not configured")
+    if payload.password != expected_password:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    token = create_access_token(subject=payload.username)
+    try:
+        token = create_access_token(subject=payload.username)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="JWT secret is not configured") from exc
+
     response.set_cookie(
         "jarvis_session",
         token,
